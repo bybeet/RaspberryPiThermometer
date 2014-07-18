@@ -1,1 +1,17 @@
 python_temperature.log
+coverage/
+.DS_Store
+*.seed
+*.log
+*.csv
+*.dat
+*.out
+*.pid
+*.swp
+*.swo
+benchmarks/graphs
+testing
+node_modules/
+testing
+test.js
+.idea
