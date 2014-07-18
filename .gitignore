@@ -1,3 +1,4 @@
+*.zip
 python_temperature.log
 coverage/
 .DS_Store
