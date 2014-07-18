@@ -8,6 +8,8 @@ var fs = require('fs');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
+var data = require('./routes/data');
+var temperature = require('./routes/temperature');
 
 var app = express();
 
@@ -23,7 +25,9 @@ app.use(require('stylus').middleware(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
+app.use('/data', data);
 app.use('/users', users);
+app.use('/temperature', temperature);
 
 /// catch 404 and forward to error handler
 app.use(function(req, res, next) {
