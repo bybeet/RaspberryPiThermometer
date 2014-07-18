@@ -29,48 +29,19 @@ router.get('/graph', function(req, res) {
         var indoorTemperatures = new Array();
         var timestamps = new Array();
 
-        for(var i=0; i < doc.length; i++){
-            outdoorTemperatures[i] = doc[i].outdoorTemperature;
-            indoorTemperatures[i] = doc[i].indoorTemperature;
+        var j=0
+        for(var i=0; i < doc.length; i+=2){
+            outdoorTemperatures[j] = doc[i].outdoorTemperature;
+            indoorTemperatures[j] = doc[i].indoorTemperature;
             var time = new Date(doc[i].timestamp);
-            timestamps[i] = time.toLocaleTimeString();
+            timestamps[j] = time.toLocaleTimeString();
+            j++;
         }
 
         var now = new Date();
 
         res.render('tempgraph', { date: now.getFullYear() + "-" + (now.getMonth()+1) + "-" + now.getDate(), timestamps: JSON.stringify(timestamps), outTemp: outdoorTemperatures, inTemp: indoorTemperatures });
     });
-
-    // temp.findById('53c8c32474fece16861a73fa', function(err, item) {
-    //    console.log(item);
-    // });
-
-    /*
-    var client = require('mongodb').MongoClient, format = require('util').format;
-    client.connect(mongoUri, function(err, db) {
-        if(err) throw err;
-
-        
-
-        db.collectionNames(function(err, list) {
-            console.log(list);
-        });
-        
-        var temperature_data = db.collection('temperature_data');
-        // console.log(temperature_data);
-        temperature_data.find().toArray(function(err, items){
-            console.log(items); 
-        });
-
-        var stream = temperature_data.find({indoorTemperature:{$ne:73.625}}).stream();
-        stream.on("data", function(item) {});
-        stream.on("end", function() {});
-
-        db.close();
-        res.send("Test");
-    });
-    */
-
 });
 
 module.exports = router;
