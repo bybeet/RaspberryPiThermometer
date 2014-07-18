@@ -6,12 +6,16 @@ var https = require('https');
 var mongouser = "rpi_read";
 var mongopassword = "testrpi"
 var mongoUri = "mongodb://" + mongouser + ":" + mongopassword + "@ds027729.mongolab.com:27729/raspberrypi_test"; 
-console.log("MongoUri: " + mongoUri);
 
 /* GET home page. */
-router.get('/', function(req, res) {
-    // res.render('index', { title: 'Express' });
-    res.send("Hello world!");
+router.get('/all', function(req, res) {
+    var db = require('monk')(mongoUri), temperatures = db.get('temperature_data');
+
+    temperatures.find({}, '-_id',  function(err, doc) {
+        if(err) throw err;
+        if(doc == undefined) db.close();
+        res.json(doc);
+    });
 });
 
 router.get('/graph', function(req, res) {
