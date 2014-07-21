@@ -66,7 +66,9 @@ def errorLog(output):
     with open(outputFile, "a") as logFile:
             logFile.write(output + "\n")
 
-now = datetime.datetime.now()
+now = datetime.datetime.utcnow()
+now = now.replace(second=0, microsecond=0)
+
 indoors = "{0:.2f}".format(celsiusToFahrenheit(getIndoorTemperature()))
 outdoors = "{0:.2f}".format(getOutdoorTemperature())
 
