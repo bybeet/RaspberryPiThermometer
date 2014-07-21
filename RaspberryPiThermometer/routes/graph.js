@@ -22,13 +22,20 @@ router.get('/all', function(req, res) {
 
         var j=0
         var skip=Math.ceil(doc.length/250);
-        console.log(skip);
+
+        var lastDate = new Date(doc[0].timestamp);
+
         for(var i=0; i < doc.length; i+=skip){
             if(i >= doc.length) break;
             outdoorTemperatures[j] = doc[i].outdoorTemperature;
             indoorTemperatures[j] = doc[i].indoorTemperature;
             var time = new Date(doc[i].timestamp);
-            timestamps[j] = time.toLocaleString();
+            if( time.getDate() != lastDate.getDate()) {
+                timestamps[j] = time.toLocaleDateString();
+                lastDate = time;
+            } else {
+                timestamps[j] = "";
+            }
             j++;
         }
 
@@ -52,12 +59,19 @@ router.get('/today', function(req, res) {
         var indoorTemperatures = new Array();
         var timestamps = new Array();
 
+        var lastDate = new Date(doc[0].timestamp);
+
         var j=0
         for(var i=0; i < doc.length; i+=1){
             outdoorTemperatures[j] = doc[i].outdoorTemperature;
             indoorTemperatures[j] = doc[i].indoorTemperature;
             var time = new Date(doc[i].timestamp);
-            timestamps[j] = time.toLocaleTimeString();
+            if( time.getHours() != lastDate.getHours()) {
+                timestamps[j] = time.toLocaleTimeString();
+                lastDate = time;
+            } else {
+                timestamps[j] = "";
+            }
             j++;
         }
 
