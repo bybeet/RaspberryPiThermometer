@@ -45,6 +45,10 @@ router.get('/all', function(req, res) {
     });
 });
 
+router.get('/d3test', function(req, res) {
+    res.render('d3test', {});
+});
+
 router.get('/today', function(req, res) {
     var db = require('monk')(mongoUri), temperatures = db.get('temperature_data');
 
