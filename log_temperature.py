@@ -11,23 +11,23 @@ import re
 import requests
 import json
 
-input = "/Users/travisbybee/Scratch/test.txt"
-# input = "/sys/bus/w1/devices/28-0000052fb8e6/w1_slave"
 outputFile = "python_temperature.log"
+
+properties = dict(line.strip().split('=') for line in open('raspberrypithermometer.properties'))
 
 isTemperatureValid = True
 firstErrorOutput = True
 
-mongouser = 'rpi'
-mongopassword = 'testrpi'
+temperatureInput = properties['temperatureInput']
+mongoUri = properties['mongoUri']
+forecastIOApiKey = properties['forecastIOApiKey']
+locationLatLong = properties['locationLatLong']
 
 forecastIOUrl = 'https://api.forecast.io/forecast'
-forecastIOApiKey = 'ebfdb78dac1e6a2bd146e91bd14db64f'
-locationLatLong = '40.020187,-105.274141'
 
 def getIndoorTemperature():
     global isTemperatureValid
-    tempFile = open(input)
+    tempFile = open(temperatureInput)
     text = tempFile.read()
     tempFile.close()
     valid = re.search('YES', text)
@@ -51,7 +51,6 @@ def celsiusToFahrenheit(temp):
     return (temp * 9 / 5.0) + 32
 
 def logToDatabase(insertObj):
-    mongoUri = 'mongodb://%s:%s@ds027729.mongolab.com:27729/raspberrypi_test' % (mongouser, mongopassword)
     client = MongoClient(mongoUri)
     db = client.raspberrypi_test
     temperatureData = db.temperature_data
