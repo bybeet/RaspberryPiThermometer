@@ -21,11 +21,14 @@ router.get('/all', function(req, res) {
         var timestamps = new Array();
 
         var j=0
-        for(var i=0; i < doc.length; i+=2){
+        var skip=Math.ceil(doc.length/250);
+        console.log(skip);
+        for(var i=0; i < doc.length; i+=skip){
+            if(i >= doc.length) break;
             outdoorTemperatures[j] = doc[i].outdoorTemperature;
             indoorTemperatures[j] = doc[i].indoorTemperature;
             var time = new Date(doc[i].timestamp);
-            timestamps[j] = time.toLocaleTimeString();
+            timestamps[j] = time.toLocaleString();
             j++;
         }
 
@@ -36,15 +39,41 @@ router.get('/all', function(req, res) {
 });
 
 router.get('/today', function(req, res) {
-    res.send("Not yet implemented . . .");
+    var db = require('monk')(mongoUri), temperatures = db.get('temperature_data');
+
+    var today = new Date();
+    today.setHours(0,0,0,0);
+
+    temperatures.find({timestamp: {$gte: today.toISOString()}}, '-_id',  function(err, doc) {
+        if(err) throw err;
+        if(doc == undefined) db.close();
+
+        var outdoorTemperatures = new Array();
+        var indoorTemperatures = new Array();
+        var timestamps = new Array();
+
+        var j=0
+        for(var i=0; i < doc.length; i+=1){
+            outdoorTemperatures[j] = doc[i].outdoorTemperature;
+            indoorTemperatures[j] = doc[i].indoorTemperature;
+            var time = new Date(doc[i].timestamp);
+            timestamps[j] = time.toLocaleTimeString();
+            j++;
+        }
+
+        var now = new Date();
+
+        res.render('tempgraph', { date: today.toLocaleDateString(), timestamps: JSON.stringify(timestamps), outTemp: outdoorTemperatures, inTemp: indoorTemperatures });
+    });
 });
 
 router.get('/:year/:month/:day', function(req, res) {
+    // Month is 0-based . . . 
     var year = req.params.year;
     var month = req.params.month;
     var day = req.params.day;
 
-    if(year.match(/\d{4}/g) == null || month.match(/[0-1]\d/g) == null || day.match(/[0-3]\d/g) == null){
+    if(year.match(/^\d{4}$/g) == null || month.match(/^[0-1]\d$/g) == null || day.match(/^[0-3]\d$/g) == null){
         if (req.accepts('html')) {
             res.render('404', { url: req.url });
             return;
@@ -52,15 +81,49 @@ router.get('/:year/:month/:day', function(req, res) {
 
         // respond with json
         if (req.accepts('json')) {
-        res.send({ error: 'Not found' });
-        return;
+            res.send({ error: 'Not found' });
+            return;
         }
 
         // default to plain-text. send()
         res.type('txt').send('Not found');
     }
 
-    res.send("Not yet implemented . . . " + req.url);                   
+    var db = require('monk')(mongoUri), temperatures = db.get('temperature_data');
+
+    var today = new Date(year, month - 1, day);
+    var tomorrow = new Date(today.getTime() + (24 * 60 * 60 * 1000));
+
+
+    temperatures.find({timestamp: {$gte: today.toISOString(), $lt: tomorrow.toISOString() }}, '-_id',  function(err, doc) {
+        if(err) throw err;
+        if(doc == undefined) db.close();
+
+        if(doc.length == 0) {
+            console.log("Length is zero . . .");
+            db.close();
+            res.send("No data available for date %s/%s/%s" % (year, month, day));
+            return;
+        }
+
+        var outdoorTemperatures = new Array();
+        var indoorTemperatures = new Array();
+        var timestamps = new Array();
+
+        var j=0
+        for(var i=0; i < doc.length; i+=1){
+            outdoorTemperatures[j] = doc[i].outdoorTemperature;
+            indoorTemperatures[j] = doc[i].indoorTemperature;
+            var time = new Date(doc[i].timestamp);
+            timestamps[j] = time.toLocaleTimeString();
+            j++;
+        }
+
+        var now = new Date();
+
+        res.render('tempgraph', { date: today.toLocaleDateString(), timestamps: JSON.stringify(timestamps), outTemp: outdoorTemperatures, inTemp: indoorTemperatures });
+        return;
+    });
 });
 
 module.exports = router;
