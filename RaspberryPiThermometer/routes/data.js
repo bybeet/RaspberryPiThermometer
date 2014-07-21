@@ -23,7 +23,18 @@ router.get('/graph', function(req, res) {
 });
 
 router.get('/today', function(req, res) {
-    res.send("Not yet implemented . . .");
+    var db = require('monk')(mongoUri), temperatures = db.get('temperature_data');
+
+    var today = new Date();
+    today.setHours(0,0,0,0);
+    today = today.toISOString();
+
+    temperatures.find({timestamp: {$gte: today}}, '-_id',  function(err, doc) {
+        if(err) throw err;
+        if(doc == undefined) db.close();
+
+        res.json(doc);
+    });
 });
 
 router.get('/:year/:month/:day', function(req, res) {
