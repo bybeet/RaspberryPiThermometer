@@ -9,6 +9,7 @@ var fs = require('fs');
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var data = require('./routes/data');
+var graph = require('./routes/graph');
 var temperature = require('./routes/temperature');
 
 var app = express();
@@ -26,6 +27,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 app.use('/data', data);
+app.use('/graph', graph);
 app.use('/users', users);
 app.use('/temperature', temperature);
 
