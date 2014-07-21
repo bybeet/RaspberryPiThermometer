@@ -9,17 +9,30 @@ var mongoUri = "mongodb://" + mongouser + ":" + mongopassword + "@ds027729.mongo
 
 /* GET home page. */
 router.get('/all', function(req, res) {
+    // Currently outputs all data.
     var db = require('monk')(mongoUri), temperatures = db.get('temperature_data');
 
     temperatures.find({}, '-_id',  function(err, doc) {
         if(err) throw err;
         if(doc == undefined) db.close();
-        res.json(doc);
-    });
-});
 
-router.get('/graph', function(req, res) {
-    res.send("Site structure has changed. Graph now at, <a href='bouldermc.dyndns.info:3000/graph/all'>bouldermc.dyndns.info:3000/graph/all</a>");
+        var outdoorTemperatures = new Array();
+        var indoorTemperatures = new Array();
+        var timestamps = new Array();
+
+        var j=0
+        for(var i=0; i < doc.length; i+=2){
+            outdoorTemperatures[j] = doc[i].outdoorTemperature;
+            indoorTemperatures[j] = doc[i].indoorTemperature;
+            var time = new Date(doc[i].timestamp);
+            timestamps[j] = time.toLocaleTimeString();
+            j++;
+        }
+
+        var now = new Date();
+
+        res.render('tempgraph', { date: now.getFullYear() + "-" + (now.getMonth()+1) + "-" + now.getDate(), timestamps: JSON.stringify(timestamps), outTemp: outdoorTemperatures, inTemp: indoorTemperatures });
+    });
 });
 
 router.get('/today', function(req, res) {
