@@ -31,7 +31,7 @@ router.get('/all', function(req, res) {
 
         var now = new Date();
 
-        res.render('tempgraph', { date: now.getFullYear() + "-" + (now.getMonth()+1) + "-" + now.getDate(), timestamps: JSON.stringify(timestamps), outTemp: outdoorTemperatures, inTemp: indoorTemperatures });
+        res.render('tempgraph', { date: "All available data", timestamps: JSON.stringify(timestamps), outTemp: outdoorTemperatures, inTemp: indoorTemperatures });
     });
 });
 
