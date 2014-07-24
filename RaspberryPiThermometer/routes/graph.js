@@ -65,7 +65,7 @@ router.get('/today', function(req, res) {
         if(doc.length == 0) {
             console.log("Length is zero . . .");
             db.close();
-            res.send("No data available for date %s" % (today.toLocaleDateString()));
+            res.render("nodata", {date : today.toLocaleDateString()});
             return;
         }
 
