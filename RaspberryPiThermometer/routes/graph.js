@@ -57,7 +57,17 @@ router.get('/today', function(req, res) {
 
     temperatures.find({timestamp: {$gte: today.toISOString()}}, '-_id',  function(err, doc) {
         if(err) throw err;
-        if(doc == undefined) db.close();
+        if(doc == undefined) {
+            db.close();
+            res.send("404");
+        }
+
+        if(doc.length == 0) {
+            console.log("Length is zero . . .");
+            db.close();
+            res.send("No data available for date %s" % (today.toLocaleDateString()));
+            return;
+        }
 
         var outdoorTemperatures = new Array();
         var indoorTemperatures = new Array();
