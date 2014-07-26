@@ -1,6 +1,6 @@
 {
-    "mongodbUri": "mongodb://rpi:testrpi@ds027729.mongolab.com:27729/raspberrypi_test",
-    "forecastIOApiKey": "ebfdb78dac1e6a2bd146e91bd14db64f",
-    "locationLatLong": "40.020187,-105.274141",
-    "temperatureInput": "test.txt"
+    "mongodbUri": "",
+    "forecastIOApiKey": "",
+    "locationLatLong": "",
+    "temperatureInput": ""
 }
