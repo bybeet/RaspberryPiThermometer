@@ -27,5 +27,15 @@ module.exports = {
             }
             return doc;
         });
-    }
+    },
+    getDateRangeData: function(begin, end) {
+        temperatures.find({timestamp: {$gte: being.toISOString(), $lt: end.toISOString() }}, '-_id',  function(err, doc) {
+            if(err) throw err;
+            if(doc == undefined) {
+                db.close();
+                res.send("404");
+            }
+            return doc;
+        });
+    },
 }

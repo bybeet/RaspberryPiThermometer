@@ -47,48 +47,40 @@ router.get('/d3test', function(req, res) {
 });
 
 router.get('/today', function(req, res) {
-    var db = require('monk')(mongoUri), temperatures = db.get('temperature_data');
-
     var today = new Date();
     today.setHours(0,0,0,0);
 
-    temperatures.find({timestamp: {$gte: today.toISOString()}}, '-_id',  function(err, doc) {
-        if(err) throw err;
-        if(doc == undefined) {
-            db.close();
-            res.send("404");
+    var doc = database.getDayData(today);
+
+    if(doc.length == 0) {
+        db.close();
+        res.render("nodata", {date : today.toLocaleDateString()});
+        return;
+    }
+
+    var outdoorTemperatures = new Array();
+    var indoorTemperatures = new Array();
+    var timestamps = new Array();
+
+    var lastDate = new Date(doc[0].timestamp);
+
+    var j=0
+    for(var i=0; i < doc.length; i+=1){
+        outdoorTemperatures[j] = doc[i].outdoorTemperature;
+        indoorTemperatures[j] = doc[i].indoorTemperature;
+        var time = new Date(doc[i].timestamp);
+        if( time.getHours() != lastDate.getHours()) {
+            timestamps[j] = time.toLocaleTimeString();
+            lastDate = time;
+        } else {
+            timestamps[j] = "";
         }
+        j++;
+    }
 
-        if(doc.length == 0) {
-            db.close();
-            res.render("nodata", {date : today.toLocaleDateString()});
-            return;
-        }
+    var now = new Date();
 
-        var outdoorTemperatures = new Array();
-        var indoorTemperatures = new Array();
-        var timestamps = new Array();
-
-        var lastDate = new Date(doc[0].timestamp);
-
-        var j=0
-        for(var i=0; i < doc.length; i+=1){
-            outdoorTemperatures[j] = doc[i].outdoorTemperature;
-            indoorTemperatures[j] = doc[i].indoorTemperature;
-            var time = new Date(doc[i].timestamp);
-            if( time.getHours() != lastDate.getHours()) {
-                timestamps[j] = time.toLocaleTimeString();
-                lastDate = time;
-            } else {
-                timestamps[j] = "";
-            }
-            j++;
-        }
-
-        var now = new Date();
-
-        res.render('tempgraph', { date: today.toLocaleDateString(), timestamps: JSON.stringify(timestamps), outTemp: outdoorTemperatures, inTemp: indoorTemperatures });
-    });
+    res.render('tempgraph', { date: today.toLocaleDateString(), timestamps: JSON.stringify(timestamps), outTemp: outdoorTemperatures, inTemp: indoorTemperatures });
 });
 
 router.get('/:year/:month/:day', function(req, res) {
@@ -113,41 +105,33 @@ router.get('/:year/:month/:day', function(req, res) {
         res.type('txt').send('Not found');
     }
 
-    var db = require('monk')(mongoUri), temperatures = db.get('temperature_data');
+    var begin = new Date(year, month - 1, day);
+    var end = new Date(today.getTime() + (24 * 60 * 60 * 1000));
 
-    var today = new Date(year, month - 1, day);
-    var tomorrow = new Date(today.getTime() + (24 * 60 * 60 * 1000));
-
-
-    temperatures.find({timestamp: {$gte: today.toISOString(), $lt: tomorrow.toISOString() }}, '-_id',  function(err, doc) {
-        if(err) throw err;
-        if(doc == undefined) db.close();
-
-        if(doc.length == 0) {
-            console.log("Length is zero . . .");
-            db.close();
-            res.send("No data available for date %s/%s/%s" % (year, month, day));
-            return;
-        }
-
-        var outdoorTemperatures = new Array();
-        var indoorTemperatures = new Array();
-        var timestamps = new Array();
-
-        var j=0
-        for(var i=0; i < doc.length; i+=1){
-            outdoorTemperatures[j] = doc[i].outdoorTemperature;
-            indoorTemperatures[j] = doc[i].indoorTemperature;
-            var time = new Date(doc[i].timestamp);
-            timestamps[j] = time.toLocaleTimeString();
-            j++;
-        }
-
-        var now = new Date();
-
-        res.render('tempgraph', { date: today.toLocaleDateString(), timestamps: JSON.stringify(timestamps), outTemp: outdoorTemperatures, inTemp: indoorTemperatures });
+    if(doc.length == 0) {
+        console.log("Length is zero . . .");
+        db.close();
+        res.send("No data available for date %s/%s/%s" % (year, month, day));
         return;
-    });
+    }
+
+    var outdoorTemperatures = new Array();
+    var indoorTemperatures = new Array();
+    var timestamps = new Array();
+
+    var j=0
+    for(var i=0; i < doc.length; i+=1){
+        outdoorTemperatures[j] = doc[i].outdoorTemperature;
+        indoorTemperatures[j] = doc[i].indoorTemperature;
+        var time = new Date(doc[i].timestamp);
+        timestamps[j] = time.toLocaleTimeString();
+        j++;
+    }
+
+    var now = new Date();
+
+    res.render('tempgraph', { date: today.toLocaleDateString(), timestamps: JSON.stringify(timestamps), outTemp: outdoorTemperatures, inTemp: indoorTemperatures });
+    return;
 });
     
 router.get('/:year/:week', function(req, res) {
