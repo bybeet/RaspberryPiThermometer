@@ -10,13 +10,19 @@ import datetime
 import re
 import requests
 import json
+import sys
 
-outputFile = "python_temperature.log"
+if(len(sys.argv) < 2):
+    configFile = "config.json"
+else:
+    configFile = sys.argv[1]
 
-isTemperatureValid = True
-firstErrorOutput = True
+if(len(sys.argv) == 3):
+    outputFile = sys.argv[2]
+else:
+    outputFile = "python_temperature.log"
 
-json_data = open('config.json')
+json_data = open(configFile)
 properties = json.load(json_data)
 json_data.close()
 
@@ -26,6 +32,9 @@ forecastIOApiKey = properties['forecastIOApiKey']
 locationLatLong = properties['locationLatLong']
 
 forecastIOUrl = 'https://api.forecast.io/forecast'
+
+isTemperatureValid = True
+firstErrorOutput = True
 
 def getIndoorTemperature():
     global isTemperatureValid
