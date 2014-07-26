@@ -2,17 +2,16 @@ var express = require('express');
 var router = express.Router();
 var fs = require('fs');
 var https = require('https');
+var nconf = require('nconf');
 
-var env = process.env.NODE_ENV || 'dev';
-if(env == 'dev'){
-    var dataFile = '/Users/travisbybee/Scratch/test.txt';
-} else {
-    var dataFile = '/sys/bus/w1/devices/28-0000052fb8e6/w1_slave';
-}
+nconf.argv().file({file: nconf.get('config')});
+
+var mongoUri = nconf.get('mongodbUri');
+var dataFile = nconf.get('temperatureInput');
+var locationLatLong = nconf.get('locationLatLong');
+var forecastIOApiKey = nconf.get('forecastIOApiKey');
 
 var forecastIOUrl = 'https://api.forecast.io/forecast';
-var forecastIOApiKey = 'ebfdb78dac1e6a2bd146e91bd14db64f';
-var locationLatLong = '40.020187,-105.274141';
 
 /* GET indoor temperature page. */
 router.get('/indoors', function(req, res) {

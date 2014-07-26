@@ -2,10 +2,11 @@ var express = require('express');
 var router = express.Router();
 var fs = require('fs');
 var https = require('https');
+var nconf = require('nconf');
 
-var mongouser = "rpi_read";
-var mongopassword = "testrpi"
-var mongoUri = "mongodb://" + mongouser + ":" + mongopassword + "@ds027729.mongolab.com:27729/raspberrypi_test"; 
+nconf.argv().file({file: nconf.get('config')});
+
+var mongoUri = nconf.get('mongodbUri');
 
 /* GET home page. */
 router.get('/all', function(req, res) {
