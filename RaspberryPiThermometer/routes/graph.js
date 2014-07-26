@@ -3,6 +3,7 @@ var router = express.Router();
 var fs = require('fs');
 var https = require('https');
 var nconf = require('nconf');
+var database = require('../database');
 
 nconf.argv().file({file: nconf.get('config')});
 
@@ -11,39 +12,34 @@ var mongoUri = nconf.get('mongodbUri');
 /* GET home page. */
 router.get('/all', function(req, res) {
     // Currently outputs all data.
-    var db = require('monk')(mongoUri), temperatures = db.get('temperature_data');
+    var doc = database.getAllData();
 
-    temperatures.find({}, '-_id',  function(err, doc) {
-        if(err) throw err;
-        if(doc == undefined) db.close();
+    var outdoorTemperatures = new Array();
+    var indoorTemperatures = new Array();
+    var timestamps = new Array();
 
-        var outdoorTemperatures = new Array();
-        var indoorTemperatures = new Array();
-        var timestamps = new Array();
+    var j=0
+    var skip=Math.ceil(doc.length/250);
 
-        var j=0
-        var skip=Math.ceil(doc.length/250);
+    var lastDate = new Date(doc[0].timestamp);
 
-        var lastDate = new Date(doc[0].timestamp);
-
-        for(var i=0; i < doc.length; i+=skip){
-            if(i >= doc.length) break;
-            outdoorTemperatures[j] = doc[i].outdoorTemperature;
-            indoorTemperatures[j] = doc[i].indoorTemperature;
-            var time = new Date(doc[i].timestamp);
-            if( time.getDate() != lastDate.getDate()) {
-                timestamps[j] = time.toLocaleDateString();
-                lastDate = time;
-            } else {
-                timestamps[j] = "";
-            }
-            j++;
+    for(var i=0; i < doc.length; i+=skip){
+        if(i >= doc.length) break;
+        outdoorTemperatures[j] = doc[i].outdoorTemperature;
+        indoorTemperatures[j] = doc[i].indoorTemperature;
+        var time = new Date(doc[i].timestamp);
+        if( time.getDate() != lastDate.getDate()) {
+            timestamps[j] = time.toLocaleDateString();
+            lastDate = time;
+        } else {
+            timestamps[j] = "";
         }
+        j++;
+    }
 
-        var now = new Date();
+    var now = new Date();
 
-        res.render('tempgraph', { date: "All available data", timestamps: JSON.stringify(timestamps), outTemp: outdoorTemperatures, inTemp: indoorTemperatures });
-    });
+    res.render('tempgraph', { date: "All available data", timestamps: JSON.stringify(timestamps), outTemp: outdoorTemperatures, inTemp: indoorTemperatures });
 });
 
 router.get('/d3test', function(req, res) {
