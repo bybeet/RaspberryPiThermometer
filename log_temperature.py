@@ -13,13 +13,15 @@ import json
 
 outputFile = "python_temperature.log"
 
-properties = dict(line.strip().split('=') for line in open('raspberrypithermometer.properties'))
-
 isTemperatureValid = True
 firstErrorOutput = True
 
+json_data = open('config.json')
+properties = json.load(json_data)
+json_data.close()
+
 temperatureInput = properties['temperatureInput']
-mongoUri = properties['mongoUri']
+mongoUri = properties['mongodbUri']
 forecastIOApiKey = properties['forecastIOApiKey']
 locationLatLong = properties['locationLatLong']
 
