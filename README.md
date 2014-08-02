@@ -11,4 +11,6 @@ Files
 
 * RaspberryPiThermometer 
 
+    Usage: node RaspberryPiThermometer/bin/www --config /path/to/config
+
 	Node.js project, set up with Express. Delivers the data to the user.
