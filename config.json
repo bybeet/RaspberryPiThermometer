@@ -1,6 +1,13 @@
 {
-    "mongodbUri": "",
-    "forecastIOApiKey": "",
-    "locationLatLong": "",
+    "mongodbUri": ""
+    "forecastIOApiKey": ""
+    "locationLatLong": ""
     "temperatureInput": ""
+    "email": {
+        "emailFromAddress": ""
+        "emailToAddress": ""
+        "emailUsername": ""
+        "emailPassword": ""
+        "smtpServer": ""
+    }
 }
