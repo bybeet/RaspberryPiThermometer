@@ -5,9 +5,6 @@
 # Query for outdoor temperature
 # Save result into database
 
-from pymongo import MongoClient
-from email.mime.text import MIMEText
-
 import datetime
 import re
 import requests
@@ -15,6 +12,9 @@ import json
 import sys
 import smtplib
 import errno
+
+from pymongo import MongoClient
+from email.mime.text import MIMEText
 
 if(len(sys.argv) >= 2):
     configFile = sys.argv[1]
@@ -35,6 +35,7 @@ mongoUri = properties['mongodbUri']
 forecastIOApiKey = properties['forecastIOApiKey']
 locationLatLong = properties['locationLatLong']
 
+# Don't send emails if the email properties aren't filled out
 fromAddr = properties['email']['emailFromAddress']
 toAddr = properties['email']['emailToAddress']
 emailUsername = properties['email']['emailUsername']
@@ -45,10 +46,6 @@ forecastIOUrl = 'https://api.forecast.io/forecast'
 
 isTemperatureValid = True
 firstErrorOutput = True
-
-errorCode = 0
-
-emailMsg = ""
 
 def getIndoorTemperature():
     global isTemperatureValid
@@ -78,7 +75,6 @@ def getOutdoorTemperature():
         sendEmail(fromAddr, toAddr, msg)
         isTemperatureValid = False
         sys.exit(errno.ENODATA)
-        return -255
     return r.json()['currently']['temperature']
 
 def celsiusToFahrenheit(temp):
