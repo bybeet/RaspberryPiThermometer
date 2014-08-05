@@ -41,7 +41,7 @@ router.get('/all', function(req, res) {
 
             var now = new Date();
 
-            res.render('tempgraph', { date: "All available data", timestamps: JSON.stringify(timestamps), outTemp: outdoorTemperatures, inTemp: indoorTemperatures });
+            res.render('graph', { date: "All available data", timestamps: JSON.stringify(timestamps), outTemp: outdoorTemperatures, inTemp: indoorTemperatures });
         }
 
         if(req.accepts('json')) {
@@ -91,7 +91,7 @@ router.get('/today', function(req, res) {
 
             var now = new Date();
 
-            res.render('tempgraph', { date: today.toLocaleDateString(), timestamps: JSON.stringify(timestamps), outTemp: outdoorTemperatures, inTemp: indoorTemperatures });
+            res.render('graph', { date: today.toLocaleDateString(), timestamps: JSON.stringify(timestamps), outTemp: outdoorTemperatures, inTemp: indoorTemperatures });
         }
 
         if(req.accepts('json')) {
@@ -149,7 +149,7 @@ router.get('/:year/:month/:day', function(req, res) {
 
             var now = new Date();
 
-            res.render('tempgraph', { date: begin.toLocaleDateString(), timestamps: JSON.stringify(timestamps), outTemp: outdoorTemperatures, inTemp: indoorTemperatures });
+            res.render('graph', { date: begin.toLocaleDateString(), timestamps: JSON.stringify(timestamps), outTemp: outdoorTemperatures, inTemp: indoorTemperatures });
         }
         if(req.accepts('json')) {
             res.json(doc);
