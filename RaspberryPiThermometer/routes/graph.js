@@ -153,5 +153,68 @@ router.get('/:year/:month/:day', function(req, res) {
         return;
     });
 });
+    
+router.get('/:year/:week', function(req, res) {
+    // Month is 0-based . . . 
+    var year = req.params.year;
+    var week = req.params.week;
+
+    if(year.match(/^\d{4}$/g) == null || week.match(/^[0-5]\d$/g) == null){
+        if (req.accepts('html')) {
+            res.render('404', { url: req.url });
+            return;
+        }
+
+        // respond with json
+        if (req.accepts('json')) {
+            res.send({ error: 'Not found' });
+            return;
+        }
+
+        // default to plain-text. send()
+        res.type('txt').send('Not found');
+    }
+
+    var db = require('monk')(mongoUri), temperatures = db.get('temperature_data');
+
+    // var beginningOfWeek = new Date(year, month - 1, day);
+    // var endOfWeek = new Date(today.getTime() + (7 * 24 * 60 * 60 * 1000));
+
+    // Looks like Monk doesn't support aggregation, which would be nice to have from the db for free.
+    temperatures.aggregation( { $group : { year : { $year : "$timestamp" }}, count : {$sum: 1}}, {}, function(err, doc) {
+        console.log(doc);
+    });
+/*
+    temperatures.find({timestamp: {$gte: today.toISOString(), $lt: tomorrow.toISOString() }}, '-_id',  function(err, doc) {
+        if(err) throw err;
+        if(doc == undefined) db.close();
+
+        if(doc.length == 0) {
+            console.log("Length is zero . . .");
+            db.close();
+            res.send("No data available for date %s/%s/%s" % (year, month, day));
+            return;
+        }
+
+        var outdoorTemperatures = new Array();
+        var indoorTemperatures = new Array();
+        var timestamps = new Array();
+
+        var j=0
+        for(var i=0; i < doc.length; i+=1){
+            outdoorTemperatures[j] = doc[i].outdoorTemperature;
+            indoorTemperatures[j] = doc[i].indoorTemperature;
+            var time = new Date(doc[i].timestamp);
+            timestamps[j] = time.toLocaleTimeString();
+            j++;
+        }
+
+        var now = new Date();
+
+        res.render('tempgraph', { date: "Week", timestamps: JSON.stringify(timestamps), outTemp: outdoorTemperatures, inTemp: indoorTemperatures });
+        return;
+    });
+    */
+});
 
 module.exports = router;
