@@ -6,36 +6,19 @@ var mongoUri = nconf.get('mongodbUri');
 var db = require('monk')(mongoUri), temperatures = db.get('temperature_data');
 
 module.exports = {
-    getAllData: function() {
-        var doc = temperatures.find({}, '-_id',  function(err, doc) {
-            if(err) throw err;
-            if(doc == undefined) {
-                db.close();
-                res.send("404");
-            }
-            return doc;
+    getAllData: function(callback) {
+        temperatures.find({}, '-_id',  function(err, doc) {
+            callback(err, doc);
         });
-            console.log(doc);
-        return doc;
     },
-    getDayData: function(date) {
+    getDayData: function(date, callback) {
         temperatures.find({timestamp: {$gte: date.toISOString()}}, '-_id',  function(err, doc) {
-            if(err) throw err;
-            if(doc == undefined) {
-                db.close();
-                res.send("404");
-            }
-            return doc;
+            callback(err, doc);
         });
     },
-    getDateRangeData: function(begin, end) {
-        temperatures.find({timestamp: {$gte: being.toISOString(), $lt: end.toISOString() }}, '-_id',  function(err, doc) {
-            if(err) throw err;
-            if(doc == undefined) {
-                db.close();
-                res.send("404");
-            }
-            return doc;
+    getDateRangeData: function(begin, end, callback) {
+        temperatures.find({timestamp: {$gte: begin.toISOString(), $lt: end.toISOString() }}, '-_id',  function(err, doc) {
+            callback(err, doc);
         });
     },
 }

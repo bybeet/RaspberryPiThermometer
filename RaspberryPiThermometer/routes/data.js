@@ -4,17 +4,15 @@ var fs = require('fs');
 var https = require('https');
 var nconf = require('nconf');
 
+var database = require('../database.js');
+
 nconf.argv().file({file: nconf.get('config')});
 
 var mongoUri = nconf.get('mongodbUri');
 
 /* GET home page. */
 router.get('/all', function(req, res) {
-    var db = require('monk')(mongoUri), temperatures = db.get('temperature_data');
-
-    temperatures.find({}, '-_id',  function(err, doc) {
-        if(err) throw err;
-        if(doc == undefined) db.close();
+    database.getAllData(function(err, doc){
         res.json(doc);
     });
 });
@@ -24,16 +22,11 @@ router.get('/graph', function(req, res) {
 });
 
 router.get('/today', function(req, res) {
-    var db = require('monk')(mongoUri), temperatures = db.get('temperature_data');
-
     var today = new Date();
     today.setHours(0,0,0,0);
     today = today.toISOString();
 
-    temperatures.find({timestamp: {$gte: today}}, '-_id',  function(err, doc) {
-        if(err) throw err;
-        if(doc == undefined) db.close();
-
+    database.getDayData(function(err, doc){
         res.json(doc);
     });
 });
@@ -45,13 +38,13 @@ router.get('/:year/:month/:day', function(req, res) {
 
     if(year.match(/\d{4}/g) == null || month.match(/[0-1]\d/g) == null || day.match(/[0-3]\d/g) == null){
         if (req.accepts('html')) {
-            res.render('404', { url: req.url });
+            res.render('404', { url: req.url + " Invalid date" });
             return;
         }
 
         // respond with json
         if (req.accepts('json')) {
-        res.send({ error: 'Not found' });
+            res.send({ error: 'Not found' });
         return;
         }
 
@@ -59,7 +52,12 @@ router.get('/:year/:month/:day', function(req, res) {
         res.type('txt').send('Not found');
     }
 
-    res.send("Not yet implemented . . . " + req.url);                   
+    var begin = new Date(year, month - 1, day);
+    var end = new Date(begin.getTime() + (24 * 60 * 60 * 1000));
+
+    database.getDateRangeData(begin, end, function(err, doc){
+        res.json(doc);                   
+    });
 });
 
 module.exports = router;
