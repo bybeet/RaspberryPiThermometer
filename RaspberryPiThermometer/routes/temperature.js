@@ -4,18 +4,13 @@ var fs = require('fs');
 var https = require('https');
 var nconf = require('nconf');
 
-nconf.argv().file({file: nconf.get('config')});
-
-var mongoUri = nconf.get('mongodbUri');
-var dataFile = nconf.get('temperatureInput');
-var locationLatLong = nconf.get('locationLatLong');
-var forecastIOApiKey = nconf.get('forecastIOApiKey');
+var settings = require('../modules/settings');
 
 var forecastIOUrl = 'https://api.forecast.io/forecast';
 
 /* GET indoor temperature page. */
 router.get('/indoors', function(req, res) {
-    fs.readFile(dataFile, 'utf8', function (err,data) {
+    fs.readFile(settings.temperatureInput, 'utf8', function (err,data) {
         if (err) {
             return console.log(err);
         }
@@ -27,7 +22,7 @@ router.get('/indoors', function(req, res) {
 
 /* GET outdoor temperature page. */
 router.get('/outdoors', function(req, res) {
-    getOutsideTemperature(forecastIOApiKey, locationLatLong, res);
+    getOutsideTemperature(settings.forecastIOApiKey, settings.locationLatLong, res);
 });
 
 /* GET test graph page. */

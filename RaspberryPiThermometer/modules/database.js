@@ -1,9 +1,6 @@
-var nconf = require('nconf');
+var settings = require('./settings');
 
-nconf.argv().file({file: nconf.get('config')});
-
-var mongoUri = nconf.get('mongodbUri');
-var db = require('monk')(mongoUri), temperatures = db.get('temperature_data');
+var db = require('monk')(settings.mongoUri), temperatures = db.get('temperature_data');
 
 module.exports = {
     getAllData: function(callback) {
