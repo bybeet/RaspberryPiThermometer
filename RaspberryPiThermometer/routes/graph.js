@@ -19,32 +19,40 @@ router.get('/all', function(req, res) {
             res.send("404");
         }
 
-        var outdoorTemperatures = new Array();
-        var indoorTemperatures = new Array();
-        var timestamps = new Array();
+        if(req.accepts('html')){
+            var outdoorTemperatures = new Array();
+            var indoorTemperatures = new Array();
+            var timestamps = new Array();
 
-        var j=0
-        var skip=Math.ceil(doc.length/250);
+            var j=0
+            var skip=Math.ceil(doc.length/250);
 
-        var lastDate = new Date(doc[0].timestamp);
+            var lastDate = new Date(doc[0].timestamp);
 
-        for(var i=0; i < doc.length; i+=skip){
-            if(i >= doc.length) break;
-            outdoorTemperatures[j] = doc[i].outdoorTemperature;
-            indoorTemperatures[j] = doc[i].indoorTemperature;
-            var time = new Date(doc[i].timestamp);
-            if( time.getDate() != lastDate.getDate()) {
-                timestamps[j] = time.toLocaleDateString();
-                lastDate = time;
-            } else {
-                timestamps[j] = "";
+            for(var i=0; i < doc.length; i+=skip){
+                if(i >= doc.length) break;
+                outdoorTemperatures[j] = doc[i].outdoorTemperature;
+                indoorTemperatures[j] = doc[i].indoorTemperature;
+                var time = new Date(doc[i].timestamp);
+                if( time.getDate() != lastDate.getDate()) {
+                    timestamps[j] = time.toLocaleDateString();
+                    lastDate = time;
+                } else {
+                    timestamps[j] = "";
+                }
+                j++;
             }
-            j++;
+
+            var now = new Date();
+
+            res.render('tempgraph', { date: "All available data", timestamps: JSON.stringify(timestamps), outTemp: outdoorTemperatures, inTemp: indoorTemperatures });
         }
 
-        var now = new Date();
+        if(req.accepts('json')) {
+            res.json(doc);
+            return;
+        }
 
-        res.render('tempgraph', { date: "All available data", timestamps: JSON.stringify(timestamps), outTemp: outdoorTemperatures, inTemp: indoorTemperatures });
     });
 
 });
@@ -64,29 +72,36 @@ router.get('/today', function(req, res) {
             return;
         }
 
-        var outdoorTemperatures = new Array();
-        var indoorTemperatures = new Array();
-        var timestamps = new Array();
+        if(req.accepts('html')){
+            var outdoorTemperatures = new Array();
+            var indoorTemperatures = new Array();
+            var timestamps = new Array();
 
-        var lastDate = new Date(doc[0].timestamp);
+            var lastDate = new Date(doc[0].timestamp);
 
-        var j=0
-        for(var i=0; i < doc.length; i+=1){
-            outdoorTemperatures[j] = doc[i].outdoorTemperature;
-            indoorTemperatures[j] = doc[i].indoorTemperature;
-            var time = new Date(doc[i].timestamp);
-            if( time.getHours() != lastDate.getHours()) {
-                timestamps[j] = time.toLocaleTimeString();
-                lastDate = time;
-            } else {
-                timestamps[j] = "";
+            var j=0
+            for(var i=0; i < doc.length; i+=1){
+                outdoorTemperatures[j] = doc[i].outdoorTemperature;
+                indoorTemperatures[j] = doc[i].indoorTemperature;
+                var time = new Date(doc[i].timestamp);
+                if( time.getHours() != lastDate.getHours()) {
+                    timestamps[j] = time.toLocaleTimeString();
+                    lastDate = time;
+                } else {
+                    timestamps[j] = "";
+                }
+                j++;
             }
-            j++;
+
+            var now = new Date();
+
+            res.render('tempgraph', { date: today.toLocaleDateString(), timestamps: JSON.stringify(timestamps), outTemp: outdoorTemperatures, inTemp: indoorTemperatures });
         }
 
-        var now = new Date();
-
-        res.render('tempgraph', { date: today.toLocaleDateString(), timestamps: JSON.stringify(timestamps), outTemp: outdoorTemperatures, inTemp: indoorTemperatures });
+        if(req.accepts('json')) {
+            res.json(doc);
+            return;
+        }
     });
 });
 
@@ -122,23 +137,29 @@ router.get('/:year/:month/:day', function(req, res) {
             return;
         }
 
-        var outdoorTemperatures = new Array();
-        var indoorTemperatures = new Array();
-        var timestamps = new Array();
+        if(req.accepts('html')){
+            var outdoorTemperatures = new Array();
+            var indoorTemperatures = new Array();
+            var timestamps = new Array();
 
-        var j=0
-        for(var i=0; i < doc.length; i+=1){
-            outdoorTemperatures[j] = doc[i].outdoorTemperature;
-            indoorTemperatures[j] = doc[i].indoorTemperature;
-            var time = new Date(doc[i].timestamp);
-            timestamps[j] = time.toLocaleTimeString();
-            j++;
+            var j=0
+            for(var i=0; i < doc.length; i+=1){
+                outdoorTemperatures[j] = doc[i].outdoorTemperature;
+                indoorTemperatures[j] = doc[i].indoorTemperature;
+                var time = new Date(doc[i].timestamp);
+                timestamps[j] = time.toLocaleTimeString();
+                j++;
+            }
+
+            var now = new Date();
+
+            res.render('tempgraph', { date: begin.toLocaleDateString(), timestamps: JSON.stringify(timestamps), outTemp: outdoorTemperatures, inTemp: indoorTemperatures });
         }
-
-        var now = new Date();
-
-        res.render('tempgraph', { date: begin.toLocaleDateString(), timestamps: JSON.stringify(timestamps), outTemp: outdoorTemperatures, inTemp: indoorTemperatures });
-        });
+        if(req.accepts('json')) {
+            res.json(doc);
+            return;
+        }
+    });
 });
     
 router.get('/:year/:week', function(req, res) {
