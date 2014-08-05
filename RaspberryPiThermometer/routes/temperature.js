@@ -25,11 +25,6 @@ router.get('/outdoors', function(req, res) {
     getOutsideTemperature(settings.forecastIOApiKey, settings.locationLatLong, res);
 });
 
-/* GET test graph page. */
-router.get('/graph', function(req, res) {
-    res.render('graph', {title: 'Graph'});
-});
-
 function getOutsideTemperature(apiKey, latitudeAndLongitude, response) {
     if(response == null) {
         console.log("Null res as input");
