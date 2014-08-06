@@ -33,23 +33,8 @@ router.get('/d3test', function(req, res) {
 
 router.get('/today', function(req, res) {
     var today = new Date();
-    today.setHours(0,0,0,0);
-
-    database.getDayData(today, function(err,doc){
-        if(doc.length == 0) {
-            res.render("nodata", {date : today.toLocaleDateString()});
-            return;
-        }
-
-        if(req.accepts('html')){
-            renderGraphData(res, doc, today.toLocaleDateString());
-            return;
-        }
-        if(req.accepts('json')) {
-            res.json(doc);
-            return;
-        }
-    });
+    var newUrl = "" + today.getFullYear() + "/" + ("0" + (today.getMonth() + 1)).slice(-2) + "/" + ("0" + today.getDate()).slice(-2);
+    res.redirect(newUrl);
 });
 
 router.get('/:year/:month/:day', function(req, res) {
@@ -58,6 +43,10 @@ router.get('/:year/:month/:day', function(req, res) {
     var month = req.params.month;
     var day = req.params.day;
 
+    var span = req.param('span');
+    if(span == undefined) {
+        span = 1;
+    }
     if(year.match(/^\d{4}$/g) == null || month.match(/^[0-1]\d$/g) == null || day.match(/^[0-3]\d$/g) == null){
         if (req.accepts('html')) {
             res.render('404', { url: req.url });
@@ -75,8 +64,7 @@ router.get('/:year/:month/:day', function(req, res) {
     }
 
     var begin = new Date(year, month - 1, day);
-    var end = new Date(begin.getTime() + (24 * 60 * 60 * 1000));
-    console.log(end.toISOString());
+    var end = new Date(begin.getTime() + (span * 24 * 60 * 60 * 1000));
 
     database.getDateRangeData(begin, end, function(err, doc){
         if(doc.length == 0) {
@@ -97,30 +85,6 @@ router.get('/:year/:month/:day', function(req, res) {
     });
 });
     
-router.get('/:year/:week', function(req, res) {
-    // Month is 0-based . . . 
-    var year = req.params.year;
-    var week = req.params.week;
-
-    if(year.match(/^\d{4}$/g) == null || week.match(/^[0-5]\d$/g) == null){
-        if (req.accepts('html')) {
-            res.render('404', { url: req.url });
-            return;
-        }
-
-        // respond with json
-        if (req.accepts('json')) {
-            res.send({ error: 'Not found' });
-            return;
-        }
-
-        // default to plain-text. send()
-        res.type('txt').send('Not found');
-    }
-
-    res.send("Not implemented yet . . .\n" + req.url);
-});
-
 function renderGraphData(res, doc, date) {
     var outdoorTemperatures = new Array();
     var indoorTemperatures = new Array();
