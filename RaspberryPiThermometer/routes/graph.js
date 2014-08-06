@@ -75,10 +75,16 @@ router.get('/today', function(req, res) {
 
             var lastDate = new Date(doc[0].timestamp);
 
-            var j=0
+            var j=0;
+            var indoorHigher = 0.0;
             for(var i=0; i < doc.length; i+=1){
                 outdoorTemperatures[j] = doc[i].outdoorTemperature;
                 indoorTemperatures[j] = doc[i].indoorTemperature;
+                
+                if(doc[i].indoorTemperature >= doc[i].outdoorTemperature) {
+                    indoorHigher++;
+                }
+
                 var time = new Date(doc[i].timestamp);
                 if( time.getHours() != lastDate.getHours()) {
                     timestamps[j] = time.toLocaleTimeString();
@@ -91,7 +97,7 @@ router.get('/today', function(req, res) {
 
             var now = new Date();
 
-            res.render('graph', { date: today.toLocaleDateString(), timestamps: JSON.stringify(timestamps), outTemp: outdoorTemperatures, inTemp: indoorTemperatures });
+            res.render('graph', { date: today.toLocaleDateString(), timestamps: JSON.stringify(timestamps), outTemp: outdoorTemperatures, inTemp: indoorTemperatures, indoorHigher: indoorHigher });
         }
 
         if(req.accepts('json')) {

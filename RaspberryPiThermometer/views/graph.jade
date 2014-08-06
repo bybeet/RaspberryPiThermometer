@@ -4,8 +4,24 @@ block content
     h1 Temperature Graph
     h2= date
     div(style="width:100%")
-        canvas(id="myChart")
+        canvas(id="lineChart")
+    div(style="width:100%")
+        canvas(id="pieChart")
     script(type='text/javascript').
+        var pieData = [
+            {
+                value: !{indoorHigher},
+                color:"#F7464A",
+                highlight: "#FF5A5E",
+                label: "Indoor Temperature Higher"
+            },
+            {
+                value: [!{outTemp}].length - !{indoorHigher},
+                color: "#46BFBD",
+                highlight: "#5AD3D1",
+                label: "Outdoor Temperature Higher"
+            }
+        ];
         var data = {
             labels: !{timestamps},
             datasets: [
@@ -32,12 +48,16 @@ block content
              ]
         };
         window.onload = function(){
-            var ctx = document.getElementById("myChart").getContext("2d");
+            var ctx = document.getElementById("lineChart").getContext("2d");
             window.myLine = new Chart(ctx).Line(data, {
                 responsive: true,
                 scaleShowLabels: true,
                 bezierCurve: true,
                 pointDot: false
                 });
+            var pieCtx = document.getElementById("pieChart").getContext("2d");
+            window.myPie = new Chart(pieCtx).Doughnut(pieData, {
+                responsive: true,
+            });
         }
 
