@@ -73,8 +73,16 @@ router.get('/:year/:month/:day', function(req, res) {
             return;
         }
 
+        var header;
+        if(span == 1){
+            header = begin.toLocaleDateString();
+        } else {
+            var endDateOutput = new Date(end.getTime() - (24 * 60 * 60 * 1000));
+            header = begin.toLocaleDateString() + " to " + endDateOutput.toLocaleDateString();
+        }
+
         if(req.accepts('html')){
-            renderGraphData(res, doc, begin.toLocaleDateString());
+            renderGraphData(res, doc, header);
             return;
         }
 
@@ -93,7 +101,7 @@ function renderGraphData(res, doc, date) {
     var j=0
     var skip=Math.ceil(doc.length/250);
 
-    var previousDate = new Date(doc[0].timestamp);
+    var previousDate = new Date(0);
     var indoorHigher = 0.0;
 
     var endDate = new Date(doc[doc.length-1].timestamp);
