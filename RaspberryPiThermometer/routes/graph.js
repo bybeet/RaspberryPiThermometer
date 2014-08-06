@@ -16,39 +16,13 @@ router.get('/all', function(req, res) {
         }
 
         if(req.accepts('html')){
-            var outdoorTemperatures = new Array();
-            var indoorTemperatures = new Array();
-            var timestamps = new Array();
-
-            var j=0
-            var skip=Math.ceil(doc.length/250);
-
-            var lastDate = new Date(doc[0].timestamp);
-
-            for(var i=0; i < doc.length; i+=skip){
-                if(i >= doc.length) break;
-                outdoorTemperatures[j] = doc[i].outdoorTemperature;
-                indoorTemperatures[j] = doc[i].indoorTemperature;
-                var time = new Date(doc[i].timestamp);
-                if( time.getDate() != lastDate.getDate()) {
-                    timestamps[j] = time.toLocaleDateString();
-                    lastDate = time;
-                } else {
-                    timestamps[j] = "";
-                }
-                j++;
-            }
-
-            var now = new Date();
-
-            res.render('graph', { date: "All available data", timestamps: JSON.stringify(timestamps), outTemp: outdoorTemperatures, inTemp: indoorTemperatures });
+            renderGraphData(res, doc, "All available data");
         }
 
         if(req.accepts('json')) {
             res.json(doc);
             return;
         }
-
     });
 
 });
@@ -63,43 +37,14 @@ router.get('/today', function(req, res) {
 
     database.getDayData(today, function(err,doc){
         if(doc.length == 0) {
-            db.close();
             res.render("nodata", {date : today.toLocaleDateString()});
             return;
         }
 
         if(req.accepts('html')){
-            var outdoorTemperatures = new Array();
-            var indoorTemperatures = new Array();
-            var timestamps = new Array();
-
-            var lastDate = new Date(doc[0].timestamp);
-
-            var j=0;
-            var indoorHigher = 0.0;
-            for(var i=0; i < doc.length; i+=1){
-                outdoorTemperatures[j] = doc[i].outdoorTemperature;
-                indoorTemperatures[j] = doc[i].indoorTemperature;
-                
-                if(doc[i].indoorTemperature >= doc[i].outdoorTemperature) {
-                    indoorHigher++;
-                }
-
-                var time = new Date(doc[i].timestamp);
-                if( time.getHours() != lastDate.getHours()) {
-                    timestamps[j] = time.toLocaleTimeString();
-                    lastDate = time;
-                } else {
-                    timestamps[j] = "";
-                }
-                j++;
-            }
-
-            var now = new Date();
-
-            res.render('graph', { date: today.toLocaleDateString(), timestamps: JSON.stringify(timestamps), outTemp: outdoorTemperatures, inTemp: indoorTemperatures, indoorHigher: indoorHigher });
+            renderGraphData(res, doc, today.toLocaleDateString());
+            return;
         }
-
         if(req.accepts('json')) {
             res.json(doc);
             return;
@@ -140,23 +85,10 @@ router.get('/:year/:month/:day', function(req, res) {
         }
 
         if(req.accepts('html')){
-            var outdoorTemperatures = new Array();
-            var indoorTemperatures = new Array();
-            var timestamps = new Array();
-
-            var j=0
-            for(var i=0; i < doc.length; i+=1){
-                outdoorTemperatures[j] = doc[i].outdoorTemperature;
-                indoorTemperatures[j] = doc[i].indoorTemperature;
-                var time = new Date(doc[i].timestamp);
-                timestamps[j] = time.toLocaleTimeString();
-                j++;
-            }
-
-            var now = new Date();
-
-            res.render('graph', { date: begin.toLocaleDateString(), timestamps: JSON.stringify(timestamps), outTemp: outdoorTemperatures, inTemp: indoorTemperatures });
+            renderGraphData(res, doc, begin.toLocaleDateString());
+            return;
         }
+
         if(req.accepts('json')) {
             res.json(doc);
             return;
@@ -187,5 +119,51 @@ router.get('/:year/:week', function(req, res) {
 
     res.send("Not implemented yet . . .\n" + req.url);
 });
+
+function renderGraphData(res, doc, date) {
+    var outdoorTemperatures = new Array();
+    var indoorTemperatures = new Array();
+    var timestamps = new Array();
+
+    var j=0
+    var skip=Math.ceil(doc.length/250);
+
+    var lastDate = new Date(doc[0].timestamp);
+    var indoorHigher = 0.0;
+
+    var endDate = new Date(doc[doc.length-1].timestamp);
+    var labelTime = false;
+    if(lastDate.toLocaleDateString() == endDate.toLocaleDateString()) {
+        labelTime = true;    
+    }
+
+    for(var i=0; i < doc.length; i+=skip){
+        if(i >= doc.length) break;
+        outdoorTemperatures[j] = doc[i].outdoorTemperature;
+        indoorTemperatures[j] = doc[i].indoorTemperature;
+        if(doc[i].indoorTemperature >= doc[i].outdoorTemperature) {
+            indoorHigher++;
+        }
+        var time = new Date(doc[i].timestamp);
+        if(labelTime) {
+            if( time.getHours() != lastDate.getHours()) {
+                timestamps[j] = time.toLocaleTimeString();
+                lastDate = time;
+            } else {
+                timestamps[j] = "";
+            }
+        } else {
+            if( time.getDate() != lastDate.getDate()) {
+                timestamps[j] = time.toLocaleDateString();
+                lastDate = time;
+            } else {
+                timestamps[j] = "";
+            }
+        }
+        j++;
+    }
+
+    res.render('graph', { date: date, timestamps: JSON.stringify(timestamps), outTemp: outdoorTemperatures, inTemp: indoorTemperatures, indoorHigher: indoorHigher });
+}
 
 module.exports = router;

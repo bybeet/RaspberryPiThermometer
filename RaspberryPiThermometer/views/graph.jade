@@ -58,6 +58,7 @@ block content
             var pieCtx = document.getElementById("pieChart").getContext("2d");
             window.myPie = new Chart(pieCtx).Doughnut(pieData, {
                 responsive: true,
+                animateScale: true
             });
         }
 
