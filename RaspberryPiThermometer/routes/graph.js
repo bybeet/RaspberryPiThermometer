@@ -76,6 +76,7 @@ router.get('/:year/:month/:day', function(req, res) {
 
     var begin = new Date(year, month - 1, day);
     var end = new Date(begin.getTime() + (24 * 60 * 60 * 1000));
+    console.log(end.toISOString());
 
     database.getDateRangeData(begin, end, function(err, doc){
         if(doc.length == 0) {
@@ -128,12 +129,13 @@ function renderGraphData(res, doc, date) {
     var j=0
     var skip=Math.ceil(doc.length/250);
 
-    var lastDate = new Date(doc[0].timestamp);
+    var previousDate = new Date(doc[0].timestamp);
     var indoorHigher = 0.0;
 
     var endDate = new Date(doc[doc.length-1].timestamp);
     var labelTime = false;
-    if(lastDate.toLocaleDateString() == endDate.toLocaleDateString()) {
+
+    if(new Date(previousDate.getTime() + (24*60*60*1000)) >= endDate) {
         labelTime = true;    
     }
 
@@ -146,16 +148,16 @@ function renderGraphData(res, doc, date) {
         }
         var time = new Date(doc[i].timestamp);
         if(labelTime) {
-            if( time.getHours() != lastDate.getHours()) {
+            if( time.getHours() != previousDate.getHours()) {
                 timestamps[j] = time.toLocaleTimeString();
-                lastDate = time;
+                previousDate = time;
             } else {
                 timestamps[j] = "";
             }
         } else {
-            if( time.getDate() != lastDate.getDate()) {
+            if( time.getDate() != previousDate.getDate()) {
                 timestamps[j] = time.toLocaleDateString();
-                lastDate = time;
+                previousDate = time;
             } else {
                 timestamps[j] = "";
             }
