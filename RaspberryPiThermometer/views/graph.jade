@@ -10,16 +10,16 @@ block content
     script(type='text/javascript').
         var pieData = [
             {
-                value: !{indoorHigher},
+                value: Math.round((!{indoorHigher}/[!{outTemp}].length)*100),
                 color:"#F7464A",
                 highlight: "#FF5A5E",
-                label: "Indoor Temperature Higher"
+                label: "Indoor Temperature Higher (%)"
             },
             {
-                value: [!{outTemp}].length - !{indoorHigher},
+                value: Math.round(([!{outTemp}].length - !{indoorHigher})/[!{outTemp}].length*100),
                 color: "#46BFBD",
                 highlight: "#5AD3D1",
-                label: "Outdoor Temperature Higher"
+                label: "Outdoor Temperature Higher (%)"
             }
         ];
         var data = {
