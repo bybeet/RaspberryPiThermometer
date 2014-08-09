@@ -7,8 +7,31 @@ block content
         canvas(id="lineChart")
     div(style="width:100%")
         canvas(id="pieChart")
+    p(id="indoorAverage")
+    p(id="outdoorAverage")
+    p(id="indoorLowest")
+    p(id="outdoorLowest")
+    p(id="indoorHighest")
+    p(id="outdoorHighest")
     script(type='text/javascript').
-        var pieData = [
+        var indoorHighest = Math.max.apply(Math, [!{inTemp}]);
+        var outdoorHighest = Math.max.apply(Math, [!{outTemp}]);
+
+        var indoorLowest = Math.min.apply(Math, [!{inTemp}]);
+        var outdoorLowest = Math.min.apply(Math, [!{outTemp}]);
+
+        var indoorAverage = 0;
+        var outdoorAverage = 0;
+
+        for(var i = 0; i < [!{outTemp}].length; i++) {
+            indoorAverage += [!{inTemp}][i];
+            outdoorAverage += [!{outTemp}][i];
+        }
+
+        indoorAverage = Math.round(indoorAverage / [!{inTemp}].length);
+        outdoorAverage = Math.round(outdoorAverage / [!{outTemp}].length);
+
+        var pieGraphData = [
             {
                 value: Math.round((!{indoorHigher}/[!{outTemp}].length)*100),
                 color:"#F7464A",
@@ -22,7 +45,7 @@ block content
                 label: "Outdoor Temperature Higher (%)"
             }
         ];
-        var data = {
+        var lineChartData = {
             labels: !{timestamps},
             datasets: [
             {
@@ -49,16 +72,24 @@ block content
         };
         window.onload = function(){
             var ctx = document.getElementById("lineChart").getContext("2d");
-            window.myLine = new Chart(ctx).Line(data, {
+            window.myLine = new Chart(ctx).Line(lineChartData, {
                 responsive: true,
                 scaleShowLabels: true,
                 bezierCurve: true,
                 pointDot: false
                 });
             var pieCtx = document.getElementById("pieChart").getContext("2d");
-            window.myPie = new Chart(pieCtx).Doughnut(pieData, {
+            window.myPie = new Chart(pieCtx).Doughnut(pieGraphData, {
                 responsive: true,
                 animateScale: true
             });
-        }
 
+            document.getElementById("indoorAverage").innerHTML = "Indoor Average: " + indoorAverage;
+            document.getElementById("outdoorAverage").innerHTML = "Outdoor Average: " + outdoorAverage;
+
+            document.getElementById("indoorHighest").innerHTML = "Indoor Highest: " + indoorHighest;
+            document.getElementById("outdoorHighest").innerHTML = "Indoor Highest: " + outdoorHighest;
+
+            document.getElementById("indoorLowest").innerHTML = "Indoor Lowest: " + indoorLowest;
+            document.getElementById("outdoorLowest").innerHTML = "Indoor Lowest: " + outdoorLowest;
+        }
