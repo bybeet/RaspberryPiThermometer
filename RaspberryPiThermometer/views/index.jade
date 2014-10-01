@@ -1,5 +1,18 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  h1 Raspberry Pi Temperature
+  p This project is a Raspberry Pi with a temperature sensor attached. It grabs measurements throughout the day and stores them in a Mongo database.
+  h2 Links
+  p
+    ul
+        li 
+            a(href='/graph/all') Graph of all temperature data
+        li
+            a(href='https://github.com/bybeet/RaspberryPiThermometer') GitHub
+  h2 API
+  p
+      ul
+          li /graph/YYYY/MM/DD
+          li /graph/YYYY/MM/DD?span=X
+  p [Add image of RPi breadboard!]
