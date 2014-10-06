@@ -19,7 +19,18 @@ block content
 			li /graph/YYYY/MM/DD
 			li /graph/YYYY/MM/DD?span=X
 	p Hitting any of the endpoints with a request that accepts JSON and not HTML will return the raw JSON data.
+	h3 Example
+	p August's Temperature Data -- 
+		a(href="/graph/2014/08/01?span=31") /graph/2014/08/01?span=31
 	h2 The Hardware
 	p The system is running off a RaspberyPi. Currently all the electronics are on a, very messy, breadboard (future improvement would be a circuit board devoted to this project). The temperature sensor is annotated in the photo. The other electronics on the breadboard are an array of colored LEDs, an IR LED (for controlling the living room speakers via a web app), and an IR receiver (to get IR remote codes).
 	p
 		img(src="images/DSC01912.JPG", width="80%")
+	h2 Todo List
+	p
+		ul
+			li Better graph page styling 
+			li Clearer graph labeling
+			li Additional data metrics (time above/below a specified temperature)
+			li Percentage increase over a period of time
+			li Caching of results pulled from database for improved speed/network utilization
