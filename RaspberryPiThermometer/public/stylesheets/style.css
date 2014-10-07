@@ -5,6 +5,13 @@ body {
 a {
   color: #00b7ff;
 }
-td, th {
+td,
+th {
   padding: 5%;
+}
+#pieChartDiv {
+  float: left;
+}
+#informationTable {
+  float: left;
 }
