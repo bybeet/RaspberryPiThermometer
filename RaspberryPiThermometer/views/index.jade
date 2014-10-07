@@ -1,37 +1,41 @@
 extends layout
 
 block content
-	h1 Raspberry Pi Temperature
-	p This project is a Raspberry Pi with a temperature sensor attached. It grabs measurements throughout the day and stores them in a Mongo database. The external services that are in use are the Forecast.io API (for outside temperature readings) and mongolab.com for the storing results (their free tier can hold years worth of data recorded from this project).
-	h2 Links
-	p
-		ul
-		li
-			a(href="/graph/today") Today's temperature data
-		li 
-			a(href='/graph/all') Graph of all temperature data
-		li
-			a(href='https://github.com/bybeet/RaspberryPiThermometer') GitHub Repo
-	h2 API
-	p
-		ul
-			li /graph/all
-			li /graph/today
-			li /graph/YYYY/MM/DD
-			li /graph/YYYY/MM/DD?span=X
-	p Hitting any of the endpoints with a request that accepts JSON and not HTML will return the raw JSON data.
-	h3 Example
-	p August's Temperature Data -- 
-		a(href="/graph/2014/08/01?span=31") /graph/2014/08/01?span=31
-	h2 The Hardware
-	p The system is running off a RaspberyPi. Currently all the electronics are on a, very messy, breadboard (future improvement would be a circuit board devoted to this project). The temperature sensor is annotated in the photo. The other electronics on the breadboard are an array of colored LEDs, an IR LED (for controlling the living room speakers via a web app), and an IR receiver (to get IR remote codes).
-	p
-		img(src="images/DSC01912.JPG", width="80%")
-	h2 Todo List
-	p In no particular order . . .
-		ul
-			li Better graph page styling 
-			li Clearer graph labeling
-			li Additional data metrics (time above/below a specified temperature)
-			li Percentage increase over a period of time
-			li Caching of results pulled from database for improved speed/network utilization
+  h1 Raspberry Pi Temperature
+  p This project is a Raspberry Pi with a temperature sensor attached. It grabs measurements throughout the day and stores them in a Mongo database. The external services that are in use are the Forecast.io API (for outside temperature readings) and mongolab.com for the storing results (their free tier can hold years worth of data recorded from this project).
+  h2 Links
+  p
+    ul
+    li
+      a(href="/graph/today") Today's temperature data
+    li 
+      a(href='/graph/all') Graph of all temperature data
+    li
+      a(href="/temperature/indoors") Current indoor temperature
+    li
+      a(href='https://github.com/bybeet/RaspberryPiThermometer') GitHub Repo
+  h2 API
+  p
+    ul
+      li /graph/all
+      li /graph/today
+      li /graph/YYYY/MM/DD
+      li /graph/YYYY/MM/DD?span=X
+            li /temperature/indoors
+            li /temperature/outdoors
+  p Hitting any of the endpoints with a request that accepts JSON and not HTML will return the raw JSON data.
+  h3 Example
+  p August's Temperature Data -- 
+    a(href="/graph/2014/08/01?span=31") /graph/2014/08/01?span=31
+  h2 The Hardware
+  p The system is running off a RaspberyPi. Currently all the electronics are on a, very messy, breadboard (future improvement would be a circuit board devoted to this project). The temperature sensor is annotated in the photo. The other electronics on the breadboard are an array of colored LEDs, an IR LED (for controlling the living room speakers via a web app), and an IR receiver (to get IR remote codes).
+  p
+    img(src="images/DSC01912.JPG", width="80%")
+  h2 Todo List
+  p In no particular order . . .
+    ul
+      li Better graph page styling 
+      li Clearer graph labeling
+      li Additional data metrics (time above/below a specified temperature)
+      li Percentage increase over a period of time
+      li Caching of results pulled from database for improved speed/network utilization
