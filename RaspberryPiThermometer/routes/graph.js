@@ -69,7 +69,7 @@ router.get('/:year/:month/:day', function(req, res) {
 
     database.getDateRangeData(begin, end, function(err, doc){
         if(doc.length == 0) {
-            res.send(util.format("No data available for date %d/%d/%d", month, day, year));
+            handleNoDataResponse(res, year, month, day);
             return;
         }
 
@@ -138,6 +138,10 @@ function renderGraphData(res, doc, date) {
     }
 
     res.render('graph', { date: date, timestamps: JSON.stringify(timestamps), outTemp: outdoorTemperatures, inTemp: indoorTemperatures, indoorHigher: indoorHigher });
+}
+
+function handleNoDataResponse(res, year, month, day) {
+    res.send(util.format("No data available for date %d/%d/%d", month, day, year));
 }
 
 module.exports = router;
