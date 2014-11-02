@@ -3,6 +3,7 @@ extends layout
 block content
     h1 Temperature Graph
     h2= date
+    p(style="color:rgb(178,34,34);") !{message}
     p(style="color:rgb(151,187,205); font-size:250%; width:50%; float:left;") Indoor
     p(style="color:rgb(220,220,220); font-size:250%; float:left;") Outdoor
     div(style="width:92%; padding-left:4%; padding-right:4%; padding-top:2%;", id="lineChartDiv")
@@ -44,16 +45,19 @@ block content
     
             indoorAverage = Math.round(indoorAverage / [!{inTemp}].length);
             outdoorAverage = Math.round(outdoorAverage / [!{outTemp}].length);
+
+            var indoorHigher = (!{indoorHigher}/[!{outTemp}].length)*100;
+            var outdoorHigher = [!{outTemp}].length - !{indoorHigher};
     
             var pieGraphData = [
                     {
-                            value: Math.round((!{indoorHigher}/[!{outTemp}].length)*100),
+                            value: Math.round(indoorHigher),
                             color:"rgba(151,187,205,1)",
                             highlight: "#FF5A5E",
                             label: "Indoor Temperature Higher (%)"
                     },
                     {
-                            value: Math.round(([!{outTemp}].length - !{indoorHigher})/[!{outTemp}].length*100),
+                            value: Math.round(outdoorHigher),
                             color: "rgba(220,220,220,1)",
                             highlight: "#FF5A5E",
                             label: "Outdoor Temperature Higher (%)"

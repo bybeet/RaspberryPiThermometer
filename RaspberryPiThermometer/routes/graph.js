@@ -150,12 +150,15 @@ function renderGraphData(res, doc, date) {
 function handleNoDataResponse(res, date) {
     // Check to see if given date is in the future
     var today = new Date();
+    var dateString = date.toLocaleDateString();
+    var message;
 
     if(date > today) {
-        res.send(util.format("%s is in the future!", date.toLocaleDateString()));
+        message = util.format("%s is in the future!", dateString);
     } else {
-        res.send(util.format("No data available for date %s", date.toLocaleDateString()));
+        message = util.format("No data available for date %s", dateString);
     }
+    res.render('graph', {date: dateString, indoorHigher: 0, message: message});
 }
 
 module.exports = router;
