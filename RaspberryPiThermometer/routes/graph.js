@@ -89,7 +89,7 @@ router.get('/:year/:month/:day', function(req, res) {
         }
 
         if(req.accepts('html')){
-            renderGraphData(res, doc, header);
+            renderGraphData(res, doc, header, span);
             return;
         }
 
@@ -100,7 +100,7 @@ router.get('/:year/:month/:day', function(req, res) {
     });
 });
     
-function renderGraphData(res, doc, date) {
+function renderGraphData(res, doc, date, span) {
     var outdoorTemperatures = new Array();
     var indoorTemperatures = new Array();
     var timestamps = new Array();
@@ -111,10 +111,8 @@ function renderGraphData(res, doc, date) {
     var previousDate = new Date(0);
     var indoorHigher = 0.0;
 
-    var endDate = new Date(doc[doc.length-1].timestamp);
     var labelTime = false;
-
-    if(new Date(previousDate.getTime() + (24*60*60*1000)) >= endDate) {
+    if(span == 1) {
         labelTime = true;    
     }
 
