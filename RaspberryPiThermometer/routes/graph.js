@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var fs = require('fs');
 var https = require('https');
+var util = require('util');
 
 var database = require('../modules/database');
 var settings = require('../modules/settings');
@@ -68,8 +69,7 @@ router.get('/:year/:month/:day', function(req, res) {
 
     database.getDateRangeData(begin, end, function(err, doc){
         if(doc.length == 0) {
-            console.log("Length is zero . . .");
-            res.send("No data available for date %s/%s/%s" % (year, month, day));
+            res.send(util.format("No data available for date %d/%d/%d", month, day, year));
             return;
         }
 
