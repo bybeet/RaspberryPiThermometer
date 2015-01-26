@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "[url]http://www.apple.com/DTDs/PropertyList-1.0.dtd[/url]">
+<plist version="1.0">
+<dict>
+        <key>Label</key>
+        <string>com.bybeet.raspberrypithermometer</string>
+
+	<key>WorkingDirectory</key>
+	<string>/Applications/RaspberryPiThermometer/RaspberryPiThermometer/</string>
+
+        <key>ProgramArguments</key>
+        <array>
+		<string>/usr/local/bin/node</string>
+		<string>bin/www</string>
+		<string>--config</string>
+		<string>../config.json</string>
+        </array>
+
+        <key>RunAtLoad</key>
+        <true/>
+        <key>OnDemand</key>
+        <true/>
+
+        <key>StandardErrorPath</key>
+        <string>output.log</string>
+        <key>StandardOutPath</key>
+        <string>output.log</string>
+</dict>
+</plist>
